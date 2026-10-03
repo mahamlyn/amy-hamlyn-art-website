@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Amy Hamlyn Art{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-content">
+    <div class="hero-copy">
+      <p class="eyebrow">Contemporary artist</p>
+      <h1>Thoughtful, expressive artwork with a rich sense of place.</h1>
+      <p class="lead">Amy Hamlyn creates paintings and mixed-media works inspired by landscape, memory, and the rhythm of everyday life.</p>
+      <div class="hero-actions">
+        <a href="/gallery" class="button primary">View artwork</a>
+        <a href="/about" class="button secondary">About Amy</a>
+        <a href="/contact" class="button secondary">Commission a piece</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="hero-card">
+        <img src="{{ url_for('static', filename='images/gallery/default.svg') }}" alt="Featured artwork">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <p class="eyebrow">About</p>
+      <h2>Artist statement</h2>
+    </div>
+    <div class="rich-text">
+      {{ about_html|safe }}
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="section-heading row">
+      <div>
+        <p class="eyebrow">Gallery</p>
+        <h2>Selected work</h2>
+      </div>
+      <a href="/gallery" class="text-link">See all artwork</a>
+    </div>
+
+    <div class="gallery-grid">
+      {% for item in gallery_items[:4] %}
+      <article class="art-card">
+        <img src="{{ item.image }}" alt="{{ item.title }}">
+        <div class="art-card-body">
+          <h3>{{ item.title }}</h3>
+          <p class="meta">{{ item.medium }}{% if item.dimensions %} • {{ item.dimensions }}{% endif %}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading row">
+      <div>
+        <p class="eyebrow">Exhibitions</p>
+        <h2>Upcoming events</h2>
+      </div>
+      <a href="/exhibitions" class="text-link">View all</a>
+    </div>
+
+    <div class="event-list">
+      {% for event in exhibitions[:3] %}
+      <article class="event-item">
+        <p class="event-date">{{ event.date }}</p>
+        <div>
+          <h3>{{ event.title }}</h3>
+          <p>{{ event.location }}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="section-heading row">
+      <div>
+        <p class="eyebrow">Journal</p>
+        <h2>Latest notes</h2>
+      </div>
+      <a href="/blog" class="text-link">Read blog</a>
+    </div>
+
+    <div class="blog-preview">
+      {% for post in blog_posts %}
+      <article class="blog-card">
+        <p class="post-date">{{ post.date }}</p>
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.excerpt }}</p>
+        <a href="/blog/{{ post.slug }}">Read more</a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

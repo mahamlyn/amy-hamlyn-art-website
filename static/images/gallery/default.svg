@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500">
+  <rect width="1200" height="1500" fill="#efe7de"/>
+  <rect x="110" y="110" width="980" height="1280" rx="18" fill="#f9f3ee" stroke="#cfa98d" stroke-width="4"/>
+  <circle cx="650" cy="580" r="250" fill="#d6b59d" opacity="0.7"/>
+  <path d="M280 1090C390 930 475 880 590 840C700 800 825 825 930 760L930 1240L270 1240L280 1090Z" fill="#8e6d52" opacity="0.8"/>
+  <path d="M120 1160C300 1020 470 980 620 1040C760 1095 860 1175 1080 1040L1080 1380L120 1380V1160Z" fill="#5f493f" opacity="0.55"/>
+  <rect x="315" y="235" width="570" height="170" rx="16" fill="#fffdf9" opacity="0.5"/>
+  <text x="600" y="340" text-anchor="middle" font-family="Georgia, serif" font-size="44" fill="#3f3028">Amy Hamlyn Art</text>
+</svg>

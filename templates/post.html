@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} | Amy Hamlyn Art{% endblock %}
+
+{% block content %}
+<section class="page-hero small-hero">
+  <div class="container narrow">
+    <p class="eyebrow">Journal</p>
+    <h1>{{ post.title }}</h1>
+    <p class="post-date">{{ post.date }}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container narrow">
+    <article class="rich-text">
+      {{ post.content|safe }}
+    </article>
+  </div>
+</section>
+{% endblock %}

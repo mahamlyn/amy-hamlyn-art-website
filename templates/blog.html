@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog | Amy Hamlyn Art{% endblock %}
+
+{% block content %}
+<section class="page-hero small-hero">
+  <div class="container">
+    <p class="eyebrow">Journal</p>
+    <h1>Studio notes and updates</h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container narrow">
+    {% for post in blog_posts %}
+    <article class="post-summary">
+      <p class="post-date">{{ post.date }}</p>
+      <h2><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h2>
+      <p>{{ post.excerpt }}</p>
+    </article>
+    {% else %}
+    <p>No blog posts yet. Add new markdown files in the content/blog folder.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

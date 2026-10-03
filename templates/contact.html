@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact | Amy Hamlyn Art{% endblock %}
+
+{% block content %}
+<section class="page-hero small-hero">
+  <div class="container narrow">
+    <p class="eyebrow">Contact</p>
+    <h1>Commission an artwork</h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container contact-layout">
+    <div class="contact-panel">
+      <h2>Enquire about a commission</h2>
+      <p class="lead">Whether you are looking for a bespoke painting, a private commission, or details on upcoming exhibitions, I would love to hear from you.</p>
+
+      <div class="contact-details">
+        <div>
+          <p class="eyebrow">Email</p>
+          <a href="mailto:hello@amyhamlynart.com">hello@amyhamlynart.com</a>
+        </div>
+        <div>
+          <p class="eyebrow">Instagram</p>
+          <a href="https://instagram.com" target="_blank" rel="noreferrer">@amyhamlynart</a>
+        </div>
+        <div>
+          <p class="eyebrow">Location</p>
+          <p>Based in the South West, available for commissions and exhibitions.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <form>
+        <label>
+          Name
+          <input type="text" name="name" placeholder="Your name">
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" placeholder="you@example.com">
+        </label>
+        <label>
+          Project type
+          <input type="text" name="project" placeholder="Commission, exhibition, collaboration...">
+        </label>
+        <label>
+          Enquiry
+          <textarea name="message" placeholder="Tell me about your project or commission idea..."></textarea>
+        </label>
+        <button type="submit" class="button primary">Send enquiry</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

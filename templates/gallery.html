@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Gallery | Amy Hamlyn Art{% endblock %}
+
+{% block content %}
+<section class="page-hero small-hero">
+  <div class="container">
+    <p class="eyebrow">Gallery</p>
+    <h1>Selected artworks</h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="gallery-grid large-grid">
+      {% for item in gallery_items %}
+      <article class="art-card">
+        <img src="{{ item.image }}" alt="{{ item.title }}">
+        <div class="art-card-body">
+          <h3>{{ item.title }}</h3>
+          <p class="meta">{{ item.medium }}{% if item.dimensions %} • {{ item.dimensions }}{% endif %}</p>
+          <div class="rich-text small-rich-text">
+            {{ item.description|safe }}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
