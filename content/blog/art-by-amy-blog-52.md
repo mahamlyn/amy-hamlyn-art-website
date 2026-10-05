@@ -1,5 +1,5 @@
 ---
-{"title": "Art by Amy Blog #52","date": "1 July 2026","excerpt": "The early ideas, experiments, and textures behind a new body of paintings."}
+{"title": "Art by Amy Blog #52","date": "1 July 2026","excerpt": "Hello my creative friends, July!! Amazing to think half the year has gone already. I’m not sure why it always surprises me, time. While I do…"}
 ---
 
 Hello my creative friends,
