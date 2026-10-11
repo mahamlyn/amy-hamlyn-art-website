@@ -64,3 +64,15 @@ This keeps the site easy to maintain and update without needing web development 
 
 - Deployment and runner notes: [documentation/README.md](documentation/README.md)
 - Project memory: [project-memory/README.md](project-memory/README.md)
+
+## Quality analysis and CI
+
+This project is configured for SonarQube analysis using a GitHub Actions workflow on a self-hosted runner.
+
+- Workflow file: [.github/workflows/build.yml](.github/workflows/build.yml)
+- Project properties: [sonar-project.properties](sonar-project.properties)
+- Trigger: manual execution via GitHub Actions (`workflow_dispatch`)
+- Stages: runner validation first, then SonarQube analysis
+- Exclusions: `scripts` paths are excluded from analysis
+
+This setup validates the local runner environment before the code is scanned, helping catch missing dependencies or tool configuration issues before the SonarQube step runs.

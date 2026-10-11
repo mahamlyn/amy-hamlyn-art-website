@@ -34,22 +34,25 @@ This matches the project architecture and ensures the correct rules and language
 
 ### CI pipeline status
 
-A SonarQube GitHub Actions pipeline has been enabled for this repository and is configured to run automatically on pushes to the main branch.
+A SonarQube GitHub Actions pipeline has been enabled for this repository and is configured to run manually from GitHub Actions using a self-hosted runner.
 
 The current workflow file is:
 
 - [.github/workflows/build.yml](../.github/workflows/build.yml)
 
-The trigger is defined as:
+The workflow trigger is:
 
 ```yaml
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 ```
 
-This means the analysis job runs whenever a commit is pushed to main.
+This means the workflow is started manually from the GitHub Actions UI rather than auto-triggering on every push.
+
+The workflow is split into two stages:
+
+1. `validate-runner` — checks required tools, installs project dependencies, and verifies Python files compile.
+2. `sonarqube` — runs only after the validation stage succeeds and performs the SonarQube scan.
 
 The workflow uses the SonarQube scanner action with the following environment variables:
 
@@ -60,6 +63,21 @@ env:
 ```
 
 These values are expected to be set in the GitHub repository secrets for the project to authenticate with the SonarQube server.
+
+### SonarQube exclusion configuration
+
+The project configuration includes exclusions for generated or utility script paths:
+
+- [sonar-project.properties](../sonar-project.properties)
+
+Current configuration:
+
+```properties
+sonar.projectKey=amy-hamlyn-art-website
+sonar.exclusions=src/**,**/scripts/**
+```
+
+This excludes files in any `scripts` directory from SonarQube analysis.
 
 ---
 
