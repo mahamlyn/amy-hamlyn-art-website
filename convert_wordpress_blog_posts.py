@@ -16,8 +16,8 @@ def clean_text(value: str) -> str:
 
 
 def strip_tags(value: str) -> str:
-    value = re.sub(r"(?is)<script.*?</script>", " ", value)
-    value = re.sub(r"(?is)<style.*?</style>", " ", value)
+    value = re.sub(r"(?is)<script\b[^>]*>[\s\S]*?</script\s*>", " ", value)
+    value = re.sub(r"(?is)<style\b[^>]*>[\s\S]*?</style\s*>", " ", value)
     value = re.sub(r"(?is)<[^>]+>", " ", value)
     return clean_text(value)
 
@@ -64,8 +64,8 @@ def extract_entry_body(text: str) -> str:
         return ""
     body = match.group(1)
 
-    body = re.sub(r"(?is)<figure[^>]*>.*?<img\s+[^>]*src=[\"']([^\"']+)[\"'][^>]*alt=[\"']([^\"']*)[\"'][^>]*>.*?</figure>", lambda m: f"\n\n![{m.group(2) or 'Image'}]({m.group(1)})\n\n", body)
-    body = re.sub(r"(?is)<figure[^>]*>.*?<img\s+[^>]*src=[\"']([^\"']+)[\"'][^>]*>.*?</figure>", lambda m: f"\n\n![]({m.group(1)})\n\n", body)
+    body = re.sub(r"(?is)<figure\b[^>]*>[\s\S]*?<img\s+[^>]*src=[\"']([^\"']+)[\"'][^>]*alt=[\"']([^\"']*)[\"'][^>]*>[\s\S]*?</figure\s*>", lambda m: f"\n\n![{m.group(2) or 'Image'}]({m.group(1)})\n\n", body)
+    body = re.sub(r"(?is)<figure\b[^>]*>[\s\S]*?<img\s+[^>]*src=[\"']([^\"']+)[\"'][^>]*>[\s\S]*?</figure\s*>", lambda m: f"\n\n![]({m.group(1)})\n\n", body)
     body = re.sub(r"(?is)<img\s+[^>]*src=[\"']([^\"']+)[\"'][^>]*alt=[\"']([^\"']*)[\"'][^>]*>", lambda m: f"\n\n![{m.group(2) or 'Image'}]({m.group(1)})\n\n", body)
     body = re.sub(r"(?is)<img\s+[^>]*src=[\"']([^\"']+)[\"'][^>]*>", lambda m: f"\n\n![]({m.group(1)})\n\n", body)
     body = re.sub(r"(?is)<p\s+class=[\"']wp-block-paragraph[\"'][^>]*>(.*?)</p>", lambda m: "\n\n" + convert_inline(m.group(1)) + "\n\n", body)
