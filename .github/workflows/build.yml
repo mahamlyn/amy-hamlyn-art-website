@@ -1,24 +1,67 @@
-name: SonarQube Scan (Security)
+name: Build
 
 on:
-  push:
-    branches:
-      - main
-
+  workflow_dispatch:
 
 jobs:
-  build:
-    name: Build and analyze
+  validate-runner:
+    name: Validate runner prerequisites
     runs-on: self-hosted
-    
+
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+
+      - name: Validate required runner tools
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for tool in python3 pip node npm git; do
+            if ! command -v "$tool" >/dev/null 2>&1; then
+              echo "Required tool is missing: $tool"
+              exit 1
+            fi
+          done
+
+          python3 --version
+          python3 -m pip --version
+          node --version
+          npm --version
+          git --version
+
+          if ! command -v wrangler >/dev/null 2>&1; then
+            echo "wrangler not found on PATH; installing it now..."
+            npm install -g wrangler@latest
+          fi
+
+          wrangler --version
+
+      - name: Install Python project dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements.txt
+
+      - name: Validate Python files compile
+        run: |
+          python3 -m py_compile app.py convert_wordpress_blog_posts.py
+
+  sonarqube:
+    name: SonarQube analysis
+    needs: validate-runner
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
       - uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
       # - uses: SonarSource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b # v1.2.0
