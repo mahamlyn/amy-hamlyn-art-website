@@ -46,3 +46,21 @@ excerpt: "Short summary"
 ```
 
 This keeps the site easy to maintain and update without needing web development knowledge.
+
+## Documentation and references
+
+- Python: https://www.python.org/
+- Flask: https://flask.palletsprojects.com/
+- Markdown: https://python-markdown.github.io/
+- PyYAML: https://pyyaml.org/wiki/PyYAMLDocumentation
+- GitHub Actions: https://docs.github.com/en/actions
+- Cloudflare Pages: https://developers.cloudflare.com/pages/
+- Cloudflare Workers: https://developers.cloudflare.com/workers/
+- Wrangler CLI: https://developers.cloudflare.com/workers/wrangler/
+- SonarQube: https://www.sonarsource.com/products/sonarqube/
+- SonarQube GitHub Action: https://github.com/SonarSource/sonarqube-scan-action
+
+## Project documentation
+
+- Deployment and runner notes: [documentation/README.md](documentation/README.md)
+- Project memory: [project-memory/README.md](project-memory/README.md)
