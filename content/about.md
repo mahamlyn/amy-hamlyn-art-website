@@ -2,10 +2,8 @@
 {"title": "About Amy"}
 ---
 
-Amy Hamlyn is a contemporary artist whose practice explores the dialogue between landscape, memory, and material. Her paintings are rooted in observation, often beginning with a place, a weathered surface, or a fleeting moment of light that stays with her.
+Amy is a visual artist from Adelaide, South Australia. Acrylic paint is her favourite medium, but she explores other mixed media through her work, including collage and fibres. 
 
-Working across painting and mixed media, Amy builds layered compositions that feel both atmospheric and intimate. Her work invites viewers to linger, noticing how texture, gesture, and colour can hold emotion and place together.
+Amy is self-taught and has been exhibiting since 2021 when art became her full-time career. Her art is bold, colourful and draws the viewer in. She processes her emotions on the canvas, with the mark making and shapes depicting the trauma she has endured and is healing through. 
 
-She is drawn to natural forms, coastal scenes, and abstracted interiors, creating pieces that are expressive while remaining grounded in the real world. Her studio practice is shaped by curiosity, experimentation, and a desire to make images that feel personal yet open to interpretation.
-
-Amy's work has been shown in local exhibitions and private commissions, and she regularly explores new ideas through seasonal series and studio journals.
+Amy is inspired by life, people, nature and colour. She has developed her style by delving deep into a variety of materials, mediums and by using texture. She feels most at peace when creating in her home studio, alone in her thoughts and expressive with the materials in front of her.
