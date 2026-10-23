@@ -2,7 +2,7 @@
 param()
 
 if ($MyInvocation.InvocationName -ne '.') {
-    throw 'Dot-source this script to deactivate the environment in the current session: . .\scripts\deactivate-test-env.ps1'
+    throw "Dot-source this script to deactivate the environment in the current session: . `"$PSCommandPath`""
 }
 
 $projectRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
