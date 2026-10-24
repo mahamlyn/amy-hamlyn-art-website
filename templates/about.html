@@ -3,17 +3,18 @@
 {% block title %}About | Amy Hamlyn Art{% endblock %}
 
 {% block content %}
-<section class="page-hero small-hero">
-  <div class="container">
-    <p class="eyebrow">About</p>
-    <h1>Amy Hamlyn</h1>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container narrow">
-    <div class="rich-text">
-      {{ about_html|safe }}
+<section class="section about-section">
+  <div class="container about-layout">
+    <figure class="about-portrait" role="img" aria-label="Placeholder for Amy Hamlyn's artist portrait">
+      <span class="about-portrait-mark" aria-hidden="true">AH</span>
+      <figcaption>Portrait to be added</figcaption>
+    </figure>
+    <div class="about-copy">
+      <p class="eyebrow">About</p>
+      <h1>Amy Hamlyn</h1>
+      <div class="rich-text">
+        {{ about_html|safe }}
+      </div>
     </div>
   </div>
 </section>
