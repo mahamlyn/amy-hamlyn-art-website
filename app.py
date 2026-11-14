@@ -1,17 +1,22 @@
 from __future__ import annotations
 
+import os
+import secrets
 from datetime import datetime
 from pathlib import Path
 
 import markdown
 import yaml
 from flask import Flask, render_template
+from flask_wtf.csrf import CSRFProtect
 
 BASE_DIR = Path(__file__).resolve().parent
 CONTENT_DIR = BASE_DIR / "content"
 BLOG_DATE_FORMATS = ("%Y-%m-%d", "%B %d, %Y", "%d %B %Y")
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32)
+CSRFProtect(app)
 
 
 def load_markdown_file(path: Path):
