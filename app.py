@@ -121,7 +121,7 @@ def load_about():
     return render_markdown(body)
 
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
     return render_template(
         "index.html",
@@ -132,12 +132,12 @@ def index():
     )
 
 
-@app.route("/blog")
+@app.route("/blog", methods=["GET"])
 def blog_index():
     return render_template("blog.html", blog_posts=load_blog_posts())
 
 
-@app.route("/blog/<slug>")
+@app.route("/blog/<slug>", methods=["GET"])
 def blog_post(slug):
     post = None
     for item in load_blog_posts():
@@ -149,22 +149,22 @@ def blog_post(slug):
     return render_template("post.html", post=post)
 
 
-@app.route("/gallery")
+@app.route("/gallery", methods=["GET"])
 def gallery_page():
     return render_template("gallery.html", gallery_items=load_gallery_items())
 
 
-@app.route("/about")
+@app.route("/about", methods=["GET"])
 def about_page():
     return render_template("about.html", about_html=load_about())
 
 
-@app.route("/exhibitions")
+@app.route("/exhibitions", methods=["GET"])
 def exhibitions_page():
     return render_template("exhibitions.html", exhibitions=load_exhibitions())
 
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET"])
 def contact_page():
     return render_template("contact.html")
 
