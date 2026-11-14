@@ -1,4 +1,4 @@
-name: Build, Scan & Deploy Website (Cloudflare)
+name: Build, Scan, Test & Deploy Website (Cloudflare)
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build static site
+    name: Build Static Site
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +42,7 @@ jobs:
           retention-days: 1
 
   sonarqube:
-    name: SonarQube security scan
+    name: SonarQube Security Scan
     needs: build
     runs-on: self-hosted
     permissions:
@@ -87,7 +87,7 @@ jobs:
         run: exit 1
 
   playwright:
-    name: Playwright site tests
+    name: Playwright Site Tests
     needs: build
     runs-on: ubuntu-latest
 
