@@ -86,11 +86,54 @@ jobs:
         if: steps.quality-gate.outcome == 'failure'
         run: exit 1
 
+  playwright:
+    name: Playwright site tests
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install Playwright
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+
+      - name: Run browser tests
+        run: npm run test:e2e
+
+      - name: Add Playwright results to job summary
+        if: always()
+        run: node scripts/summarize_playwright.js
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
   deploy:
     name: Deploy to Cloudflare Pages
+    if: github.ref == 'refs/heads/main'
     needs:
       - build
       - sonarqube
+      - playwright
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4

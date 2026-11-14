@@ -83,3 +83,16 @@ The manual GitHub Actions workflow builds the Flask site into static files, runs
 - Deployment: Cloudflare Pages at `https://amyhamlynart.pages.dev`, after the SonarQube Quality Gate succeeds
 
 Configure the `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `SONAR_TOKEN`, and `SONAR_HOST_URL` repository secrets. The workflow token needs the repository `Issues: write` permission. The Cloudflare token needs permission to edit Pages projects, and the self-hosted runner must be online for the security scan. The static export uses `/` as its base path for the Cloudflare domain.
+
+## Browser tests
+
+Playwright tests live in `test-cases/` and run against the generated static site. To run them locally:
+
+```bash
+PAGES_BASE_PATH=/ python3 scripts/build_static_site.py
+npm ci
+npx playwright install chromium
+npm run test:e2e
+```
+
+The build workflow runs browser tests as a separate job against the same `dist/` artifact that is deployed. Results appear in the GitHub Actions job summary, failed tests are annotated inline, and the HTML report and traces are uploaded as the `playwright-results` artifact. Deployment is blocked if the browser tests fail.
