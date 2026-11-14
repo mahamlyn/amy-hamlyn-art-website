@@ -54,6 +54,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install test dependencies
+        run: python3 -m pip install -r requirements-test.txt
+
+      - name: Run tests and generate coverage report
+        run: |
+          python3 -m coverage run --source=app -m unittest discover -s tests
+          python3 -m coverage xml -o coverage.xml
+
       - uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
