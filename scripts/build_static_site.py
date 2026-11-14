@@ -68,7 +68,7 @@ class BasePathRewriter(HTMLParser):
     def _rewrite_url(self, value: str) -> str:
         parsed = urlsplit(value)
         path = parsed.path
-        if not path.startswith("/") or path.startswith("//"):
+        if parsed.scheme or parsed.netloc or not path.startswith("/"):
             return value
         if self.base_path and (path == self.base_path or path.startswith(f"{self.base_path}/")):
             return value
