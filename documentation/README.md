@@ -51,7 +51,7 @@ on:
 
 The manually started workflow builds the static site, runs SonarQube analysis and the Quality Gate, then deploys the build artifact to Cloudflare Pages only when both earlier jobs succeed.
 
-After the analysis completes, `scripts/sync_sonar_issues.py` creates one GitHub issue per unresolved SonarQube finding. It uses the SonarQube issue key to update or reopen an existing issue on later runs instead of creating duplicates. The scan job requires `issues: write` for `GITHUB_TOKEN`; the SonarQube token must be able to browse the configured project.
+After the analysis completes, `scripts/sync_sonar_issues.py` creates one GitHub issue per unresolved SonarQube finding. Each issue is flagged with severity and type labels, and includes the rule guidance, source excerpt and scanned-commit link, line range, remediation effort, and data-flow locations when SonarQube provides them. The SonarQube issue key keeps reruns idempotent: existing issues are updated or reopened instead of duplicated. The scan job requires `issues: write` for `GITHUB_TOKEN`; the SonarQube token must be able to browse the configured project and its rules.
 
 The static export is produced by `scripts/build_static_site.py` with `PAGES_BASE_PATH=/`; no Cloudflare build command is needed in the Cloudflare dashboard because GitHub Actions performs the build and deployment.
 
