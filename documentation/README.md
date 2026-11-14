@@ -2,6 +2,8 @@
 
 This document records the package versions, tooling, deployment setup, and project onboarding details for the Amy Hamlyn Art website.
 
+> The active deployment workflow is Cloudflare Pages via [`.github/workflows/build.yml`](../.github/workflows/build.yml). It deploys the static export to the `amyhamlynart` project after the build and SonarQube Quality Gate pass.
+
 ## 1. SonarQube onboarding summary
 
 This project was configured in SonarQube as a Python project, using the Python language selection during onboarding.
@@ -34,25 +36,24 @@ This matches the project architecture and ensures the correct rules and language
 
 ### CI pipeline status
 
-A SonarQube GitHub Actions pipeline has been enabled for this repository and is configured to run manually from GitHub Actions using a self-hosted runner.
+A build, SonarQube scan, and Cloudflare Pages deployment pipeline runs only when manually started from GitHub Actions. The SonarQube job uses a self-hosted runner; deployment runs on a GitHub-hosted runner.
 
 The current workflow file is:
 
 - [.github/workflows/build.yml](../.github/workflows/build.yml)
 
-The workflow trigger is:
+The workflow triggers are:
 
 ```yaml
 on:
   workflow_dispatch:
 ```
 
-This means the workflow is started manually from the GitHub Actions UI rather than auto-triggering on every push.
+The manually started workflow builds the static site, runs SonarQube analysis and the Quality Gate, then deploys the build artifact to Cloudflare Pages only when both earlier jobs succeed.
 
-The workflow is split into two stages:
+After the analysis completes, `scripts/sync_sonar_issues.py` creates one GitHub issue per unresolved SonarQube finding. It uses the SonarQube issue key to update or reopen an existing issue on later runs instead of creating duplicates. The scan job requires `issues: write` for `GITHUB_TOKEN`; the SonarQube token must be able to browse the configured project.
 
-1. `validate-runner` — checks required tools, installs project dependencies, and verifies Python files compile.
-2. `sonarqube` — runs only after the validation stage succeeds and performs the SonarQube scan.
+The static export is produced by `scripts/build_static_site.py` with `PAGES_BASE_PATH=/`; no Cloudflare build command is needed in the Cloudflare dashboard because GitHub Actions performs the build and deployment.
 
 The workflow uses the SonarQube scanner action with the following environment variables:
 
@@ -62,7 +63,7 @@ env:
   SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 ```
 
-These values are expected to be set in the GitHub repository secrets for the project to authenticate with the SonarQube server.
+These values must be set as GitHub repository secrets for the project to authenticate with the SonarQube server.
 
 ### SonarQube exclusion configuration
 
@@ -108,79 +109,44 @@ pip install -r requirements.txt
 
 ---
 
-## 2. Self-hosted runner requirements for Cloudflare deployment
+## 2. Cloudflare Pages prerequisites
 
-The site is not a native Cloudflare Workers Python app. It is a Flask app with Markdown-driven content, so the deployment runner should be prepared to:
+Create or use the Cloudflare Pages project named `amyhamlynart`. In GitHub repository settings, add these Actions secrets:
 
-- install Python dependencies
-- install Node.js and Wrangler
-- run a static export or build step
-- authenticate with Cloudflare
-- deploy the generated static output to Cloudflare Pages
+- `CLOUDFLARE_API_TOKEN` — token with permission to edit Cloudflare Pages projects
+- `CLOUDFLARE_ACCOUNT_ID` — Cloudflare account that owns the Pages project
+- `SONAR_TOKEN` and `SONAR_HOST_URL` — required for the security scan
 
-### Minimum runner tooling
-
-Recommended versions for a Linux-based self-hosted GitHub Actions runner:
-
-- Python: 3.12.x
-- Node.js: 20.x LTS
-- npm: bundled with Node.js 20
-- Git: current stable release
-- curl / ca-certificates / build-essential
-
-### Example Linux installation
-
-```bash
-apt-get update
-apt-get install -y curl git ca-certificates build-essential python3 python3-venv python3-pip
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt-get install -y nodejs
-npm install -g wrangler
-```
-
-### Cloudflare deployment package
-
-Use the Wrangler CLI for deployment:
-
-```bash
-npm install -g wrangler@latest
-```
-
-This is the package used to authenticate and deploy a Cloudflare Pages project.
+The deployment action runs Wrangler on a GitHub-hosted runner, so Node.js and Wrangler do not need to be installed on the self-hosted SonarQube runner. The site is built as static files because Cloudflare Pages does not run this Flask application directly.
 
 ---
 
 ## 3. Deployment model for this project
 
-This website currently runs as a Flask application locally, but Cloudflare Pages is best suited to static output. For this project, the runner should perform a static build/export before deployment.
+This website runs as a Flask application locally and is exported to static output for Cloudflare Pages by `scripts/build_static_site.py`.
 
 ### Why this matters
 
 The main app in [app.py](../app.py) is a Python server that renders templates and loads Markdown content at runtime. Cloudflare Pages does not run Flask directly for this app without a build/export layer.
 
-### Recommended deployment approach
+### Deployment flow
 
-1. install Python and site dependencies
-2. generate a static website bundle from the markdown content
-3. deploy the generated output to Cloudflare Pages
-4. optionally use a minimal Worker only as a front-door or routing layer if needed
+1. GitHub Actions installs Python dependencies and generates `dist/`.
+2. SonarQube scan and Quality Gate must pass.
+3. Wrangler deploys `dist/` to the `amyhamlynart` project on the `main` production branch.
 
 ---
 
 ## 4. Recommended Cloudflare environment variables
 
-Set these on the self-hosted runner or in the GitHub Actions secret store:
+Set these in the GitHub Actions repository secrets:
 
 - CLOUDFLARE_API_TOKEN
 - CLOUDFLARE_ACCOUNT_ID
 
-Optional project-level values:
+The workflow uses the fixed Pages project name `amyhamlynart` and deploys the `main` branch.
 
-- PROJECT_NAME
-- DEPLOY_BRANCH
-- CUSTOM_DOMAIN
-
-### Example GitHub Actions step
+### Example GitHub Actions configuration
 
 ```yaml
 env:
@@ -190,20 +156,17 @@ env:
 
 ---
 
-## 5. Typical runner workflow
+## 5. Deployment command
 
 A practical deployment workflow for this site is:
 
 ```bash
-python -m venv .venv
-. .venv/bin/activate
-pip install -r requirements.txt
-python build.py
-npm install -g wrangler@latest
-wrangler pages deploy dist --project-name amy-hamlyn-art
+python -m pip install -r requirements.txt
+PAGES_BASE_PATH=/ python scripts/build_static_site.py
+npx wrangler pages deploy dist --project-name amyhamlynart --branch main
 ```
 
-The exact build command depends on the static exporter script used for this project. At a minimum, the runner must be able to generate a deployable `dist/` or `site/` directory.
+In CI, the Cloudflare Wrangler action runs the deployment command after the build and security scan instead of requiring a local Wrangler installation.
 
 ---
 
@@ -234,4 +197,4 @@ For this website, the practical default package baseline is:
 - Wrangler latest
 - GitHub Actions self-hosted Linux runner
 
-This setup is suitable for building and deploying the site to Cloudflare Pages after a static export step.
+This setup builds the static site and deploys it to Cloudflare Pages after a successful SonarQube Quality Gate.

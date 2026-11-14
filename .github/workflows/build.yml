@@ -1,56 +1,53 @@
-name: Build & Deploy Website
+name: Build, Scan & Deploy Website (Cloudflare)
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-pages
+  cancel-in-progress: false
+
 jobs:
-  validate-runner:
-    name: Validate runner prerequisites
-    runs-on: self-hosted
+  build:
+    name: Build static site
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
+          python-version: "3.12"
 
-      - name: Validate required runner tools
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          for tool in python3 pip node npm git; do
-            if ! command -v "$tool" >/dev/null 2>&1; then
-              echo "Required tool is missing: $tool"
-              exit 1
-            fi
-          done
-
-          python3 --version
-          python3 -m pip --version
-          node --version
-          npm --version
-          git --version
-
-          if ! command -v wrangler >/dev/null 2>&1; then
-            echo "wrangler not found on PATH; installing it now..."
-            npm install -g wrangler@latest
-          fi
-
-          wrangler --version
-
-      - name: Install Python project dependencies
+      - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
 
-      - name: Validate Python files compile
+      - name: Validate and export site
+        env:
+          PAGES_BASE_PATH: /
         run: |
-          python3 -m py_compile app.py convert_wordpress_blog_posts.py
+          python3 -m py_compile app.py scripts/convert_wordpress_blog_posts.py scripts/build_static_site.py
+          python3 scripts/build_static_site.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
 
   sonarqube:
-    name: SonarQube analysis
-    needs: validate-runner
+    name: SonarQube security scan
+    needs: build
     runs-on: self-hosted
+    permissions:
+      contents: read
+      issues: write
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -62,9 +59,40 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # - uses: SonarSource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b # v1.2.0
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: SonarSource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b # v1.2.0
+        id: quality-gate
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Create or update GitHub issues for findings
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: python3 scripts/sync_sonar_issues.py
+
+      - name: Enforce SonarQube Quality Gate
+        if: steps.quality-gate.outcome == 'failure'
+        run: exit 1
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs:
+      - build
+      - sonarqube
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME }} --branch=main

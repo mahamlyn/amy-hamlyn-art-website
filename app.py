@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 
 import markdown
@@ -8,6 +9,7 @@ from flask import Flask, render_template
 
 BASE_DIR = Path(__file__).resolve().parent
 CONTENT_DIR = BASE_DIR / "content"
+BLOG_DATE_FORMATS = ("%Y-%m-%d", "%B %d, %Y", "%d %B %Y")
 
 app = Flask(__name__)
 
@@ -34,7 +36,18 @@ def load_blog_posts():
             "excerpt": meta.get("excerpt", ""),
             "content": markdown.markdown(body, extensions=["extra", "sane_lists"]),
         })
+    posts.sort(key=_blog_post_date, reverse=True)
     return posts
+
+
+def _blog_post_date(post):
+    value = str(post["date"])
+    for date_format in BLOG_DATE_FORMATS:
+        try:
+            return datetime.strptime(value, date_format)
+        except ValueError:
+            continue
+    return datetime.min
 
 
 def load_gallery_items():
