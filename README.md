@@ -99,16 +99,4 @@ The build workflow runs browser tests as a separate job against the same `dist/`
 
 ## Cloudflare Pages contact form
 
-The commission form submits directly from the browser to FormSubmit's AJAX endpoint for `amyhamlyn@live.com`. No Cloudflare Pages Function or Resend API key is used. The existing required-field and email validation, loading state, duplicate-submit guard, and success/error messages remain in place. FormSubmit handles cross-origin requests for its AJAX endpoint.
-
-### FormSubmit setup
-
-1. Deploy the site and submit the contact form once.
-2. Open the FormSubmit activation email sent to `amyhamlyn@live.com` and confirm the address.
-3. Submit the form again to verify delivery. The sender's address is included as the reply-to address.
-
-The FormSubmit recipient is necessarily visible in the frontend endpoint URL. Keep the default FormSubmit spam protection enabled. Turnstile is not used: securely validating Turnstile requires a backend, which this static FormSubmit setup intentionally does not have.
-
-### Cloudflare Pages compatibility
-
-The site remains a static Cloudflare Pages deployment. No Functions directory, runtime binding, or secret is required for contact delivery; the existing build and deploy workflow continues to deploy only `dist/`.
+Online enquiry submission is temporarily disabled while the contact service is being finalized. The fields remain visible, but the send button is disabled and no network request is made. Visitors are directed to email `ahamlyn@adam.com.au` instead.

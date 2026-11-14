@@ -33,10 +33,7 @@
     </div>
 
     <div class="contact-form">
-      <form id="contact-form" action="https://formsubmit.co/amyhamlyn@live.com" method="post" data-contact-form novalidate>
-        <input type="hidden" name="_subject" value="New enquiry from Amy Hamlyn Art">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_replyto" value="">
+      <form id="contact-form">
         <label for="contact-name">
           Name
           <input id="contact-name" type="text" name="name" placeholder="Your name" autocomplete="name" maxlength="120" required>
@@ -53,14 +50,13 @@
           Enquiry
           <textarea id="contact-enquiry" name="enquiry" placeholder="Tell me about your project or commission idea..." maxlength="5000" required></textarea>
         </label>
-        <p id="contact-status" class="contact-status" role="status" aria-live="polite" aria-atomic="true" hidden></p>
-        <button type="submit" class="button primary">Send enquiry</button>
+        <p id="contact-status" class="contact-status" data-state="unavailable" role="status" aria-live="polite" aria-atomic="true">
+          Online enquiries are temporarily disabled while the service is configured. Please email
+          <a href="mailto:ahamlyn@adam.com.au">ahamlyn@adam.com.au</a> instead.
+        </p>
+        <button type="button" class="button primary" disabled aria-describedby="contact-status">Send enquiry</button>
       </form>
     </div>
   </div>
 </section>
-{% endblock %}
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/contact.js') }}" defer></script>
 {% endblock %}
