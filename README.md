@@ -30,6 +30,8 @@ A lightweight Flask website for an artist portfolio and studio journal.
 
 Flask routes are protected against CSRF on state-changing requests. Set `FLASK_SECRET_KEY` to a stable, private value when running Flask outside local development; the application generates a temporary key when it is unset.
 
+Markdown content is sanitized before rendering. The development entry point runs with Flask debug mode disabled.
+
 ## Updating content
 Add or edit Markdown files in `content/`:
 - About: `content/about.md`

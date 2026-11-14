@@ -5,18 +5,47 @@ import secrets
 from datetime import datetime
 from pathlib import Path
 
+import bleach
 import markdown
 import yaml
 from flask import Flask, render_template
+from markupsafe import Markup
 from flask_wtf.csrf import CSRFProtect
 
 BASE_DIR = Path(__file__).resolve().parent
 CONTENT_DIR = BASE_DIR / "content"
 BLOG_DATE_FORMATS = ("%Y-%m-%d", "%B %d, %Y", "%d %B %Y")
+MARKDOWN_TAGS = {
+    "a", "abbr", "b", "blockquote", "br", "code", "dd", "del", "div", "dl",
+    "dt", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "img", "li",
+    "ol", "p", "pre", "s", "span", "strong", "sub", "sup", "table", "tbody",
+    "td", "th", "thead", "tr", "ul",
+}
+MARKDOWN_ATTRIBUTES = {
+    "a": ["href", "title"],
+    "img": ["src", "alt", "title"],
+    "li": ["value"],
+    "ol": ["start"],
+    "td": ["colspan", "rowspan"],
+    "th": ["colspan", "rowspan"],
+}
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32)
 CSRFProtect(app)
+
+
+def render_markdown(body: str) -> Markup:
+    rendered = markdown.markdown(body, extensions=["extra", "sane_lists"])
+    sanitized = bleach.clean(
+        rendered,
+        tags=MARKDOWN_TAGS,
+        attributes=MARKDOWN_ATTRIBUTES,
+        protocols={"http", "https", "mailto"},
+        strip=True,
+        strip_comments=True,
+    )
+    return Markup(sanitized)
 
 
 def load_markdown_file(path: Path):
@@ -39,7 +68,7 @@ def load_blog_posts():
             "title": meta.get("title", path.stem.replace("-", " ").title()),
             "date": meta.get("date", ""),
             "excerpt": meta.get("excerpt", ""),
-            "content": markdown.markdown(body, extensions=["extra", "sane_lists"]),
+            "content": render_markdown(body),
         })
     posts.sort(key=_blog_post_date, reverse=True)
     return posts
@@ -65,7 +94,7 @@ def load_gallery_items():
             "image": meta.get("image", "/static/images/gallery/default.svg"),
             "medium": meta.get("medium", "Mixed media"),
             "dimensions": meta.get("dimensions", ""),
-            "description": markdown.markdown(body, extensions=["extra", "sane_lists"]),
+            "description": render_markdown(body),
         })
     return items
 
@@ -79,7 +108,7 @@ def load_exhibitions():
             "title": meta.get("title", path.stem.replace("-", " ").title()),
             "date": meta.get("date", ""),
             "location": meta.get("location", ""),
-            "content": markdown.markdown(body, extensions=["extra", "sane_lists"]),
+            "content": render_markdown(body),
         })
     return exhibitions
 
@@ -89,7 +118,7 @@ def load_about():
     if not path.exists():
         return "<p>Tell the story of your practice here.</p>"
     _, body = load_markdown_file(path)
-    return markdown.markdown(body, extensions=["extra", "sane_lists"])
+    return render_markdown(body)
 
 
 @app.route("/")
@@ -141,4 +170,4 @@ def contact_page():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    app.run(debug=False, host="127.0.0.1", port=5000)
