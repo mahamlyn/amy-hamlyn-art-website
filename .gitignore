@@ -7,3 +7,4 @@ coverage.xml
 node_modules/
 playwright-report/
 test-results/
+.dev.vars

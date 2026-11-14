@@ -40,3 +40,16 @@ for (const sitePage of pages) {
     ).toBeVisible();
   });
 }
+
+test('shared footer uses the contact email on every page', async ({ page }) => {
+  const paths = ['/', ...pages.map((sitePage) => sitePage.path), '/blog/art-by-amy-blog-52/'];
+
+  for (const path of paths) {
+    await page.goto(path);
+    const footer = page.getByRole('contentinfo');
+
+    await expect(footer.getByRole('link', { name: 'ahamlyn@adam.com.au', exact: true }))
+      .toHaveAttribute('href', 'mailto:ahamlyn@adam.com.au');
+    await expect(footer).not.toContainText('hello@amyhamlynart.com');
+  }
+});

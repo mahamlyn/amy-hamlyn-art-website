@@ -459,6 +459,30 @@ h3 {
   resize: vertical;
 }
 
+.contact-status {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel-strong);
+  color: var(--muted);
+}
+
+.contact-status[data-state="success"] {
+  border-color: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.contact-status[data-state="error"] {
+  border-color: #b94a48;
+  color: #8f2927;
+}
+
+.contact-form button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .site-footer {
   border-top: 1px solid var(--line);
   padding: 1.8rem 0 2.5rem;

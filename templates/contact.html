@@ -33,26 +33,34 @@
     </div>
 
     <div class="contact-form">
-      <form>
-        <label>
+      <form id="contact-form" action="https://formsubmit.co/amyhamlyn@live.com" method="post" data-contact-form novalidate>
+        <input type="hidden" name="_subject" value="New enquiry from Amy Hamlyn Art">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_replyto" value="">
+        <label for="contact-name">
           Name
-          <input type="text" name="name" placeholder="Your name">
+          <input id="contact-name" type="text" name="name" placeholder="Your name" autocomplete="name" maxlength="120" required>
         </label>
-        <label>
+        <label for="contact-email">
           Email
-          <input type="email" name="email" placeholder="you@example.com">
+          <input id="contact-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" maxlength="254" required>
         </label>
-        <label>
+        <label for="contact-project-type">
           Project type
-          <input type="text" name="project" placeholder="Commission, exhibition, collaboration...">
+          <input id="contact-project-type" type="text" name="projectType" placeholder="Commission, exhibition, collaboration..." maxlength="120">
         </label>
-        <label>
+        <label for="contact-enquiry">
           Enquiry
-          <textarea name="message" placeholder="Tell me about your project or commission idea..."></textarea>
+          <textarea id="contact-enquiry" name="enquiry" placeholder="Tell me about your project or commission idea..." maxlength="5000" required></textarea>
         </label>
+        <p id="contact-status" class="contact-status" role="status" aria-live="polite" aria-atomic="true" hidden></p>
         <button type="submit" class="button primary">Send enquiry</button>
       </form>
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/contact.js') }}" defer></script>
 {% endblock %}
