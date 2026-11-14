@@ -7,7 +7,7 @@ test('contact page exposes labeled enquiry fields and email contact', async ({ p
   await expect(page.getByLabel('Email')).toBeVisible();
   await expect(page.getByLabel('Project type')).toBeVisible();
   await expect(page.getByLabel('Enquiry')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Amy Hamlyn' })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: 'Amy Hamlyn', exact: true })).toHaveAttribute(
     'href',
     'mailto:ahamlyn@adam.com.au',
   );
